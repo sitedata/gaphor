@@ -25,7 +25,6 @@ jobs:
         uses: danyeaw/setup-python-debug@main
         with:
           python-version: ${{ env.python_version }}
-          xvfb_command: 'xvfb-run'
       - name: Install Poetry
         run: $RUNNER_TOOL_CACHE/Python/${{ inputs.python-version }}/x64/bin/python -m pip install poetry==1.1.11
         shell: bash
