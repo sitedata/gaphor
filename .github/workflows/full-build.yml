@@ -14,7 +14,6 @@ jobs:
 
   linux:
     runs-on: ubuntu-20.04
-    timeout-minutes: 30
     if: "!contains(github.event.head_commit.message, 'skip ci')"
     steps:
       - uses: actions/checkout@v2.4.0
@@ -23,7 +22,21 @@ jobs:
       - name: Install Linux Dependencies
         uses: ./.github/actions/linux_dependencies
       - name: Set up Python with Debug
-        uses: ./.github/actions/debug_python
+        uses: danyeaw/setup-python-debug/.github/actions/debug_python
         with:
           python-version: ${{ env.python_version }}
           xvfb_command: 'xvfb-run'
+      - name: Install Poetry
+        run: $RUNNER_TOOL_CACHE/Python/${{ inputs.python-version }}/x64/bin/python -m pip install poetry==1.1.11
+        shell: bash
+      - name: Configure Poetry
+        run: poetry config virtualenvs.in-project true
+        shell: bash
+      - name: Install Python Dependencies
+        run: poetry install
+        shell: bash
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+      - name: Test with Pytest
+        run: xvfb-run poetry run poe test-all
+        shell: bash
